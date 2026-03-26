@@ -26,7 +26,7 @@ import { FlowsList } from './pages/admin/flows/flows-list/flows-list';
 import { CreateFlow } from './pages/admin/flows/create-flow/create-flow';
 import { EditFlow } from './pages/admin/flows/edit-flow/edit-flow';
 import { EmployeeLayout } from './layouts/employee-layout/employee-layout';
-import { EmployeeProfile} from './pages/employee/profile/employee-profile';
+import { EmployeeProfileComponent } from './pages/employee/profile/employee-profile';
 import { EmployeeTasks } from './pages/employee/tasks/employee-tasks/employee-tasks';
 import { CompletedTasks } from './pages/employee/completed-tasks/completed-tasks';
 
@@ -73,7 +73,7 @@ export const routes: Routes = [
         canActivate: [authGuard, roleGuard],
         data: { role: 'employee' },
         children: [
-            { path: 'profile', component: EmployeeProfile },
+            { path: 'profile', component: EmployeeProfileComponent },
             {path: 'tasks',component: EmployeeTasks},
             {path: 'completed-tasks',component: CompletedTasks}
         ]

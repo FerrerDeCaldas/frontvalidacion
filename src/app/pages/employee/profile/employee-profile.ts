@@ -21,7 +21,8 @@ import { Employee } from '../../../core/models/employee.model';
   templateUrl: './employee-profile.html',
   styleUrl: './employee-profile.scss'
 })
-export class EmployeeProfile implements OnInit {
+export class EmployeeProfileComponent implements OnInit {
+
   employee: Employee | null = null;
   isLoading = true;
   errorMessage = '';
