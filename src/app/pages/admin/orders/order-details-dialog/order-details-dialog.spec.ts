@@ -1,35 +1,55 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatChipsModule } from '@angular/material/chips';
 
-import { OrderDetailsDialog } from './order-details-dialog';
+import { Order, ProductDetail } from '../../../../core/models/order.model';
+import { OrdersService } from '../../../../services/orders.service';
 
-describe('OrderDetailsDialog', () => {
-  let component: OrderDetailsDialog;
-  let fixture: ComponentFixture<OrderDetailsDialog>;
+@Component({
+  selector: 'app-order-details-dialog',
+  standalone: true,
+  imports: [
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDividerModule,
+    MatChipsModule
+  ],
+  templateUrl: './order-details-dialog.html',
+  styleUrl: './order-details-dialog.scss'
+})
+export class OrderDetailsDialog implements OnInit {
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [OrderDetailsDialog],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        provideRouter([]),
-        // Estos dos son OBLIGATORIOS para cualquier Dialog de Material
-        { provide: MatDialogRef, useValue: {} },
-        { provide: MAT_DIALOG_DATA, useValue: {} }
-      ]
-    })
-    .compileComponents();
+  products: ProductDetail[] = [];
+  isLoadingProducts = true;
 
-    fixture = TestBed.createComponent(OrderDetailsDialog);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+  constructor(
+    public dialogRef: MatDialogRef<OrderDetailsDialog>,
+    @Inject(MAT_DIALOG_DATA) public order: Order,
+    private ordersService: OrdersService
+  ) {}
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+  ngOnInit(): void {
+    this.loadProducts();
+  }
+
+  loadProducts(): void {
+    this.ordersService.getOrderWithProducts(this.order.id_order).subscribe({
+      next: (response) => {
+        this.products = response.data.products || [];
+        this.isLoadingProducts = false;
+      },
+      error: (err) => {
+        console.error('Error cargando productos', err);
+        this.isLoadingProducts = false;
+      }
+    });
+  }
+
+  onClose(): void {
+    this.dialogRef.close();
+  }
+}

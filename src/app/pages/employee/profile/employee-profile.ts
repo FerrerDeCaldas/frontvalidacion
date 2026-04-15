@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+
 import { EmployeesService } from '../../../services/employee.service';
 import { AuthService } from '../../../services/auth.service';
 import { Employee } from '../../../core/models/employee.model';
@@ -19,7 +20,7 @@ import { Employee } from '../../../core/models/employee.model';
     MatChipsModule
   ],
   templateUrl: './employee-profile.html',
-  styleUrl: './employee-profile.scss'
+  styleUrls: ['./employee-profile.scss']
 })
 export class EmployeeProfileComponent implements OnInit {
 
@@ -38,7 +39,7 @@ export class EmployeeProfileComponent implements OnInit {
 
   loadEmployeeProfile(): void {
     const currentUser = this.authService.getCurrentUser();
-    
+
     if (!currentUser?.cc) {
       this.errorMessage = 'No se pudo obtener la información del usuario';
       this.isLoading = false;

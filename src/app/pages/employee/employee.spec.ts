@@ -1,6 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { Employee } from './employee';
 
@@ -10,14 +8,8 @@ describe('Employee', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      // Mantenemos Employee en imports porque es Standalone
-      imports: [Employee], 
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
+      imports: [Employee]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Employee);
     component = fixture.componentInstance;

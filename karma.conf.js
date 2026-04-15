@@ -13,17 +13,17 @@ module.exports = function (config) {
       jasmine: {
         // config de jasmine si se necesita
       },
-      clearContext: false // deja los resultados visibles en el navegador
+      clearContext: false 
     },
     jasmineHtmlReporter: {
-      suppressAll: true // quita los logs basura
+      suppressAll: true 
     },
     coverageReporter: {
-            dir: 'coverage/frontend-tailorflow',
-            subdir: '.',
-            reporters: [
-                { type: 'html' },
-                { type: 'lcovonly', file: 'lcov.info' }
+      dir: 'coverage/frontend-tailorflow',
+      subdir: '.',
+      reporters: [
+        { type: 'html' },
+        { type: 'lcovonly', file: 'lcov.info' }
       ]
     },
     reporters: ['progress', 'kjhtml', 'coverage'],
@@ -31,9 +31,31 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: false,
-    browsers: ['Chrome'],
-    singleRun: true, // Se cierra solo para asegurar que se escriba el archivo
+    
+    // 🔧 MODIFICACIÓN CLAVE: Configuramos ChromeHeadless para que sea liviano
+    browsers: ['ChromeHeadlessCustom'],
+    customLaunchers: {
+      ChromeHeadlessCustom: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-gpu',
+          '--disable-dev-shm-usage',
+          '--disable-extensions',
+          '--remote-debugging-port=9222'
+        ]
+      }
+    },
+
+    singleRun: true,
     restartOnFileChange: false,
-    failOnEmptyTestSuite: false
+    failOnEmptyTestSuite: false,
+
+    // 🚀 TIEMPOS DE ESPERA AUMENTADOS (MODO SUPERVIVENCIA):
+    browserNoActivityTimeout: 300000, // 5 minutos (evita el disconnect por lag)
+    browserDisconnectTimeout: 60000,  // 1 minuto para reconectar
+    browserDisconnectTolerance: 3,    // 3 intentos de reconexión
+    captureTimeout: 240000            // 4 minutos para capturar el browser
   });
 };

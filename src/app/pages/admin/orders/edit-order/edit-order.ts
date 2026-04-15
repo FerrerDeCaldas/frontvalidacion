@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,10 +9,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatDividerModule } from '@angular/material/divider';
+
+import { forkJoin } from 'rxjs';
+
 import { OrdersService } from '../../../../services/orders.service';
 import { OrderWithProducts } from '../../../../core/models/order.model';
-import { MatDivider } from '@angular/material/divider';
-import { forkJoin, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-edit-order',
@@ -25,15 +28,17 @@ import { forkJoin, Observable } from 'rxjs';
     MatCardModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatDivider
+    MatDividerModule
   ],
   templateUrl: './edit-order.html',
   styleUrl: './edit-order.scss'
 })
 export class EditOrder implements OnInit {
+
   editForm!: FormGroup;
   orderId!: number;
   order!: OrderWithProducts;
+
   isLoading = true;
   isSaving = false;
 
@@ -67,7 +72,7 @@ export class EditOrder implements OnInit {
       next: (response) => {
         this.order = response.data;
 
-        if (this.order.state_name !== 'PENDING') {
+        if (!this.order?.state_name || this.order.state_name !== 'PENDING') {
           alert('Este pedido no puede ser editado porque no está en estado PENDIENTE');
           this.router.navigate(['/admin/orders']);
           return;
@@ -106,15 +111,12 @@ export class EditOrder implements OnInit {
 
     this.isSaving = true;
 
-
     const orderUpdate = {
       estimated_delivery_date: this.formatDate(this.editForm.value.estimated_delivery_date)
     };
 
     this.ordersService.update(this.orderId, orderUpdate).subscribe({
-      next: () => {
-        this.updateProducts();
-      },
+      next: () => this.updateProducts(),
       error: (err) => {
         console.error('Error actualizando pedido', err);
         alert('Error al actualizar el pedido: ' + (err.error?.message || err.message));
@@ -125,13 +127,11 @@ export class EditOrder implements OnInit {
 
   updateProducts(): void {
     const productUpdates = this.editForm.value.products.map((product: any) => {
-      const productData = {
+      return this.ordersService.updateProduct(product.id_product, {
         fabric: product.fabric,
         dimensions: product.dimensions,
         description: product.description
-      };
-
-      return this.ordersService.updateProduct(product.id_product, productData);
+      });
     });
 
     forkJoin(productUpdates).subscribe({
@@ -154,9 +154,11 @@ export class EditOrder implements OnInit {
 
   private formatDate(date: Date): string {
     const localDate = new Date(date);
+
     const year = localDate.getFullYear();
     const month = String(localDate.getMonth() + 1).padStart(2, '0');
     const day = String(localDate.getDate()).padStart(2, '0');
+
     return `${year}-${month}-${day}`;
   }
 }

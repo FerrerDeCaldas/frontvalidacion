@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:cov": "ng test --code-coverage --no-watch --browsers=ChromeHeadless",
+    "test:cov": "ng test --code-coverage --no-watch --browsers=ChromeHeadless --source-map=false",
     "sonar": "sonar-scanner"
   },
   "prettier": {
@@ -27,7 +27,7 @@
     "@angular/cdk": "^20.2.10",
     "@angular/common": "^20.2.0",
     "@angular/compiler": "^20.2.0",
-    "@angular/core": "^20.2.0",
+    "@angular/core": "^20.3.18",
     "@angular/forms": "^20.2.0",
     "@angular/material": "^20.2.10",
     "@angular/platform-browser": "^20.2.0",

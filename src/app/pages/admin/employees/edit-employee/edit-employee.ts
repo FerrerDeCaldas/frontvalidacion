@@ -24,7 +24,7 @@ import { Employee } from '../../../../core/models/employee.model';
   styleUrl: './edit-employee.scss'
 })
 export class EditEmployee implements OnInit {
-  employeeForm!: FormGroup; 
+  employeeForm!: FormGroup;
   employeeId!: number;
   employee!: Employee;
   isLoading = true;
@@ -41,17 +41,17 @@ export class EditEmployee implements OnInit {
     private route: ActivatedRoute,
     private employeesService: EmployeesService
   ) {
-    this.initForm(); 
+    this.initForm();
   }
 
   ngOnInit(): void {
-    this.employeeId = +this.route.snapshot.params['id'];
+    this.employeeId = Number(this.route.snapshot.params['id']);
     this.loadEmployee();
   }
 
   initForm(): void {
     this.employeeForm = this.fb.group({
-      password: ['', Validators.minLength(6)],
+      password: ['', [Validators.minLength(6)]],
       state: ['', Validators.required]
     });
   }
@@ -60,7 +60,7 @@ export class EditEmployee implements OnInit {
     this.employeesService.getById(this.employeeId).subscribe({
       next: (response) => {
         this.employee = response.data;
-      
+
         this.employeeForm.patchValue({
           state: this.employee.state
         });
@@ -75,25 +75,19 @@ export class EditEmployee implements OnInit {
     });
   }
 
- 
   onSubmit(): void {
-    if (!this.employeeForm.valid) {
+    if (this.employeeForm.invalid) {
       this.employeeForm.markAllAsTouched();
-      alert('Por favor, revise los campos del formulario.'); 
       return;
     }
 
     this.isSaving = true;
-  
+
     const { state, password } = this.employeeForm.getRawValue();
 
-    const updateData: any = {
-      state: state
-    };
+    const updateData: any = { state };
 
-    if (password) {
-      updateData.password = password;
-    }
+    if (password) updateData.password = password;
 
     this.employeesService.update(this.employeeId, updateData).subscribe({
       next: () => {
@@ -102,7 +96,7 @@ export class EditEmployee implements OnInit {
       },
       error: (err) => {
         console.error('Error actualizando empleado', err);
-        alert('Error al actualizar empleado: ' + (err.error?.message || err.message));
+        alert('Error al actualizar empleado');
         this.isSaving = false;
       }
     });
